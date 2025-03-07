@@ -1,0 +1,16 @@
+node_modules
+dist
+.github
+.vscode
+bun.lockb
+pnpm - lock.yaml
+.git
+tests
+coverage
+vitest.config.mts
+vitest.config.e2e.mts
+vitest.workspace.mts
+tsconfig.build.tsbuildinfo
+README.md
+logs
+.pipeline

@@ -1,0 +1,12 @@
+{
+    "hello_cli": "Hola CLI",
+    "current_counter": "Contador Actual",
+    "chart_sample": "Grafico de ejemplo",
+    "hide": "Esconder",
+    "show": "Mostrar",
+    "change_language": "Cambiar idioma",
+    "interact_with_app": "Como queres interactuar con la app",
+    "user_id": "Id del usuario",
+    "log_in": "Ingresar",
+    "test_web_sockets": "Probar Web Sockets"
+}

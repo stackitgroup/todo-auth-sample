@@ -1,0 +1,53 @@
+name: Continuous Integration (CI) 🚀
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+      - staging
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  run:
+    name: Build Project 🛠️
+    steps:
+      - name: Checkout Repository ✅
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm 📦
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+          
+      - name: Setup Node.js 💿
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore pnpm Cache and node_modules 📂
+        id: pnpm-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('package.json') }}
+ 
+      - name: Set up .env file 📄
+        run: |
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+
+      - name: Install Dependencies 📦
+        run: pnpm install
+
+      - name: Run Build 🏗️
+        run: pnpm run build
+
+      - name: Run TSC 🏗️
+        run: pnpm run tsc
+

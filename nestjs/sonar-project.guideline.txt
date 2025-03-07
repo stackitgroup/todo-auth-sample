@@ -1,0 +1,45 @@
+SonarQube Setup and Execution on Windows for the Project
+
+Prerequisites:
+    - SonarQube: Download SonarQube from the official SonarQube website, selecting the "Community Edition (Free)".
+    - Java JDK 21: Install Java JDK 21 (required for SonarQube). Download it from Oracle JDK page.
+
+Step 1: Use SonarQube on Windows:
+    - Download SonarQube from the SonarQube page.
+    - Extract it to a folder of your choice.
+    - Run the StartSonar.bat file located in \bin\windows-x86-64 to launch the SonarQube server.
+
+Step 2: Create a Project in SonarQube Server:
+    - Go to the SonarQube dashboard in your browser (http://localhost:9000).
+    - Login with the default credentials (or your own if changed):
+        - Username: admin
+        - Password: admin
+    - Once logged in, click on the Projects tab in the top navigation.
+    - Click Create Project.
+    - Enter a Project Key (unique identifier for your project) and Project Name.
+    - Click Create.
+   
+Step 3: Generate a SonarQube Token:
+    - In the top-right corner, click on your user icon and select My Account.
+    - Navigate to the Security tab.
+    - Under Tokens, click Generate Tokens.
+    - Give the token a name and click Generate.
+    - Copy the generated token and store it in a secure place (you will need it for the configuration).
+
+Step 4: Configure sonar-project.properties in your project root with basic configuration:
+    sonar.projectKey=my_project_key
+    sonar.projectName=My Project Name
+    sonar.projectVersion=1.0
+    sonar.sources=src
+    sonar.host.url=http://localhost:9000  # Your SonarQube server URL
+    sonar.login=<your_sonar_token>
+
+Step 5: Run SonarScanner with pnpm
+    - Ensure your project is set up with pnpm and dependencies installed (pnpm install -g sonarqube-scanner).
+    - Run the following command in your project root: pnpm sonar-scanner
+
+Step 6: View Results in SonarQube Server
+    - After running the SonarScanner, go back to your SonarQube server dashboard (http://localhost:9000).
+    - Navigate to the Projects tab.
+    - Select your project from the list to see the results of the analysis.
+    - Review the code quality metrics, including issues, duplications, test coverage, and other insights.

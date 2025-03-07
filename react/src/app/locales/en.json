@@ -1,0 +1,12 @@
+{
+    "hello_cli": "Hello CLI",
+    "current_counter": "Current counter",
+    "chart_sample": "Chart Sample",
+    "hide": "Hide",
+    "show": "Show",
+    "change_language": "Change Language",
+    "interact_with_app": "How do you want to interact with app",
+    "user_id": "User Id",
+    "log_in": "Log In",
+    "test_web_sockets": "Test Web Sockets"
+}

@@ -1,0 +1,13 @@
+.modal-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: calc(100vh);
+	width: 100%;
+	background: #18181881;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+	overflow: hidden;
+}

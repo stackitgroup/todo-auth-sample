@@ -1,0 +1,44 @@
+.custom-modal {
+	margin: auto;
+	padding-bottom: 3rem;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 1000;
+	background-color: #fff;
+	overflow: hidden;
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		border-bottom: 1px solid #e7e7e7;
+		padding: 10px;
+		&::before,
+		&::after {
+			display: none;
+		}
+		h4 {
+			font-size: 18px;
+			font-weight: bold;
+			margin: 0;
+		}
+		.close {
+			border: none;
+			background-color: transparent;
+			opacity: 0.6;
+			transition: all 0.2s ease-in-out;
+			&:hover {
+				opacity: 1;
+			}
+			span {
+				font-size: 18px;
+			}
+		}
+	}
+	.modal-children-container {
+		height: 90%;
+		width: 100%;
+	}
+}

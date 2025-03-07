@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - PORT=${PORT}
+    ports:
+      - '80:80' # expose-to-the-world : only-in-the-docker
+    container_name: nestjs
+    volumes:
+      - .:/app
+      - /app/node_modules
+  

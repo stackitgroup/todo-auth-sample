@@ -1,0 +1,41 @@
+.actionBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	width: auto;
+	min-width: 10rem;
+	height: 32px;
+	min-height: 32px;
+	background-color: #312c76;
+	border-radius: 4px;
+	color: #fff;
+	padding: 5px 10px;
+	transition: all 0.2s ease-in-out;
+	border: none;
+	&:hover {
+		background-color: #406db5;
+		color: #fff;
+	}
+}
+
+.altActionBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	padding: 5px 10px;
+	width: 180px;
+	min-width: 10rem;
+	height: 35px;
+	min-height: 32px;
+	background-color: transparent;
+	border: 1px solid #312c76;
+	border-radius: 5px;
+	transition: all 0.2s ease-in-out;
+	color: #312c76;
+	&:hover {
+		background-color: #312c76;
+		color: #fff;
+	}
+}

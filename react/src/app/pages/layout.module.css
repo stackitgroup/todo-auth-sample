@@ -1,0 +1,49 @@
+.MainContainer {
+	height: calc(100dvh - 50px);
+	padding: 0;
+	overflow: hidden;
+	position: relative;
+	z-index: 0;
+
+	main,
+	aside {
+		height: 100%;
+		padding: 0;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	a {
+		margin: 0;
+		text-align: left;
+	}
+
+	h2 {
+		font-size: 16px;
+		font-weight: bold;
+		margin: 0 0 10px;
+	}
+
+	h4 {
+		font-size: 14px;
+	}
+	a {
+		text-decoration: none;
+		&:hover,
+		&:focus,
+		&:active,
+		&:visited {
+			text-decoration: none;
+		}
+	}
+
+	@media print {
+		height: auto;
+		overflow: visible;
+	}
+}

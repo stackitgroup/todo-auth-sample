@@ -1,0 +1,10 @@
+pre-push:
+  parallel: true
+
+pre-commit:
+  parallel: true
+  commands:
+    build:
+      run: pnpm run build
+    test:
+      run: pnpm run test run

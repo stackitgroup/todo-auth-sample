@@ -1,0 +1,91 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"files": {
+		"ignore": [
+			"node_modules/**/*",
+			".next/**/*",
+			".husky/**/*",
+			".swc/**/*",
+			".vscode/**/*",
+			".github/**/*",
+			"**/*.d.ts"
+		]
+	},
+	"formatter": {
+		"formatWithErrors": true,
+		"lineEnding": "lf"
+	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		},
+		"formatter": {
+			"trailingCommas": "none",
+			"semicolons": "asNeeded",
+			"indentWidth": 2,
+			"indentStyle": "space",
+			"quoteStyle": "single",
+			"lineEnding": "lf"
+		},
+		"globals": [
+			"Global1"
+		],
+		"linter": {
+			"enabled": true
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"all": true,
+			"a11y": {
+				"all": true,
+				"noSvgWithoutTitle": "off",
+				"useButtonType": "off"
+			},
+			"style": {
+				"all": true,
+				"useImportType": "off",
+				"noNamespaceImport": "off",
+				"useFilenamingConvention": "off",
+				"useNamingConvention": "off",
+				"noParameterProperties": "off"
+			},
+			"nursery": {
+				"all": true,
+				"useImportRestrictions": "off",
+				"noSecrets": "off",
+				"useExplicitType": "off",
+				"noProcessEnv": "off",
+				"noEnum": "off"
+			},
+			"performance": {
+				"all": true,
+				"noDelete": "off"
+			},
+			"correctness": {
+				"all": true,
+				"noNodejsModules": "off",
+				"useImportExtensions": "off"
+			},
+			"suspicious": {
+				"all": true,
+				"noEmptyBlockStatements": "off",
+				"noConsoleLog": "off",
+				"noConsole": "off",
+				"noReactSpecificProps": "off"
+			},
+			"complexity": {
+				"noStaticOnlyClass": "off"
+			}
+		}
+	}
+}
