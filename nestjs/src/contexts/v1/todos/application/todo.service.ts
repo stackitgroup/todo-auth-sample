@@ -1,14 +1,27 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { TodoRepository } from '../infrastructure/persistence/todo.repository'
 import { Todo } from '../domain/entities/todo.entity';
 import { CreateTodoDTO } from '../infrastructure/dto/create-todo.dto';
+import { User } from '../../users/domain/entities/user.entity';
+import { UserService } from '../../users/application/user.service';
+import { NODE_ENV } from '@/app/env.config';
+import { JwtService } from '@nestjs/jwt';
+import { JWTBody } from '../../users/domain/jwt-body';
 
 @Injectable()
 export class TodoService {
-  constructor(private readonly todoRepository: TodoRepository) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly todoRepository: TodoRepository,
+    private readonly jwtService: JwtService
+  ) {}
 
   async getAllTodos(): Promise<Todo[]> {
-    return this.todoRepository.findAll();
+    if (NODE_ENV === 'development' || NODE_ENV === 'test') {
+      return await this.todoRepository.findAll()
+    }
+
+    return []
   }
 
   async getTodoById(id: string): Promise<Todo | null> {
@@ -21,7 +34,37 @@ export class TodoService {
     return found
   }
 
-  async createTodo(data : CreateTodoDTO): Promise<Todo> {
+  async getTodosByUserId(userId: string, userAgent: string, authHeader: string): Promise<Todo[] | null> {
+    const user = await this.userService.getUserById(userId)
+
+    if(!user) {
+      throw new NotFoundException(`User ID ${userId} not found`)
+    }
+
+    const accessToken = authHeader.split(' ')[1]
+
+    const {
+      userId: userIdToken
+    }: JWTBody = await this.jwtService.verifyAsync(accessToken)
+
+    if(userId !== userIdToken) {
+      throw new UnauthorizedException()
+    }
+
+    const found = (await this.todoRepository.findByCondition(
+      {
+        condition: {
+          user: {
+            id: userId
+          }
+        }
+      }
+    ))
+
+    return found
+  }
+
+  async createTodo(data : CreateTodoDTO, userAgent: string): Promise<Todo> {
     const alreadyExists = (
       await this.todoRepository.findByCondition(
         {
@@ -35,12 +78,23 @@ export class TodoService {
     if(alreadyExists) {
       throw new BadRequestException('Todo already exists')
     }
+
+    const user = await this.userService.getUserById(data.userId)
+
+    if(!user) {
+      throw new NotFoundException(`User ID ${data.userId} does not exist`)
+    }
+
+    if(user.userAgent !== userAgent) {
+      await this.userService.clearUserCredentials(data.userId)
+      throw new UnauthorizedException()
+    }
     
     return this.todoRepository.create({
       title: data.title,
       description: data.description,
       dueDate: data.dueDate,
-      // userId
+      user: new User(data.userId)
     });
   }
 

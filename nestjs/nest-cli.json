@@ -3,7 +3,7 @@
 	"collection": "@nestjs/schematics",
 	"compilerOptions": {
 		"deleteOutDir": true,
-		"builder": "swc",
+		"builder": "webpack",
 		"typeCheck": true
 	}
 }

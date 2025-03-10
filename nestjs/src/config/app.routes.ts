@@ -8,6 +8,7 @@ export const routes = {
       root: 'todo',
       findAll: '',
       byId: ':id',
+      byUserId: 'user/:userId',
       create: 'create',
     },
     user: { 

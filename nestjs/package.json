@@ -88,6 +88,7 @@
 			"@nestjs/core",
 			"@nestjs/platform-fastify",
 			"@swc/core",
+			"bcrypt",
 			"esbuild",
 			"lefthook",
 			"nestjs-pino",

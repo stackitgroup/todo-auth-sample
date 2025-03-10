@@ -17,12 +17,12 @@ export class UserController {
   ) {}
 
   @Get()
-  async getAllUsers(): Promise<User[]> {
+  getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<User | null> {
+  getUserById(@Param('id') id: string): Promise<User | null> {
     return this.userService.getUserById(id);
   }
 
@@ -73,7 +73,7 @@ export class UserController {
       throw new UnauthorizedException('User-Agent header is missing')
     }
 
-    const loginResponse = await this.userService.login({...data, userAgent});
+    const loginResponse = await this.userService.logIn({...data, userAgent});
 
     if(!loginResponse) {
       throw new BadRequestException('Invalid credentials');

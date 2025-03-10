@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsString, MaxLength, MinDate, MinLength } from "class-validator";
+import { IsDate, IsString, IsUUID, MaxLength, MinDate, MinLength } from "class-validator";
 
 export class CreateTodoDTO {
     @IsString()
@@ -16,4 +16,7 @@ export class CreateTodoDTO {
     @Type(() => Date)
     @MinDate(new Date(), {message: 'The due date must be in the future'})
     dueDate: Date
+
+    @IsUUID()
+    userId: string
 }

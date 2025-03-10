@@ -1,5 +1,5 @@
 import { routes } from '@/config/app.routes';
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Headers } from '@nestjs/common';
 import { Todo } from '../domain/entities/todo.entity';
 import { TodoService } from '../application/todo.service';
 import { CreateTodoDTO } from './dto/create-todo.dto';
@@ -12,18 +12,30 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Get(routes.v1.todo.findAll)
-  async getAllTodos(): Promise<Todo[]> {
+  getAllTodos(): Promise<Todo[]> {
     return this.todoService.getAllTodos();
   }
 
   @Get(routes.v1.todo.byId)
-  async getTodoById(@Param('id') id: string): Promise<Todo | null> {
+  getTodoById(@Param('id') id: string): Promise<Todo | null> {
     return this.todoService.getTodoById(id);
   }
 
+  @Get(routes.v1.todo.byUserId)
+  getTodoByUserId(
+    @Headers('User-Agent') userAgent: string,
+    @Headers('Authorization') authHeader: string,
+    @Param('userId') userId: string
+  ): Promise<Todo[] | null> {
+    return this.todoService.getTodosByUserId(userId, userAgent, authHeader);
+  }
+
   @Post(routes.v1.todo.create)
-  async createTodo(@Body() data: CreateTodoDTO): Promise<Todo> {
-    return this.todoService.createTodo(data)
+  createTodo(
+    @Headers('User-Agent') userAgent: string,
+    @Body() data: CreateTodoDTO
+  ): Promise<Todo> {
+    return this.todoService.createTodo(data, userAgent)
   }
 
   @Put(routes.v1.todo.byId)

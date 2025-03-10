@@ -1,5 +1,5 @@
 import { NODE_ENV } from '@/app/env.config'
-import { JWTBody } from '@/contexts/v1/user/domain/jwt-body'
+import { JWTBody } from '@/contexts/v1/users/domain/jwt-body'
 import {
   BadRequestException,
   Injectable,
@@ -8,33 +8,40 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { UserService } from '../../application/user.service'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService
+  ) {}
   async use(req: FastifyRequest, reply: FastifyReply, next: () => void) {
     if (NODE_ENV === 'test') {
       return next()
     }
     
     const accessToken = req.headers.authorization?.split(' ')[1]
-    const userAgentId = req.headers['user-agent']
-    console.log('accessToken', req.headers)
+    const headerUserAgentId = req.headers['user-agent']
 
     if (!accessToken) {
       throw new UnauthorizedException('Access Token is missing')
     }
 
-    if (!userAgentId) {
+    if (!headerUserAgentId) {
       throw new UnauthorizedException('user-agent header is missing')
     }
 
     try {
-      const decodedAccessToken: JWTBody =
+      const {
+        userAgentId,
+        userId
+      }: JWTBody =
       await this.jwtService.verifyAsync(accessToken)
       
-      if (decodedAccessToken.userAgentId !== userAgentId) {
-        throw new UnauthorizedException('User Agent is not matching')
+      if (userAgentId !== headerUserAgentId) {
+        await this.userService.clearUserCredentials(userId)
+        throw new UnauthorizedException()
       }
       
       next()

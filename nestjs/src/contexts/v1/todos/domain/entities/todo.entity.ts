@@ -1,19 +1,19 @@
-import { User } from '@/contexts/v1/user/domain/entities/user.entity';
-import { BaseEntity } from '@/libs/ddd/base.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '@/contexts/v1/users/domain/entities/user.entity'
+import { BaseEntity } from '@/libs/ddd/base.entity'
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm'
 
-@Entity({ name: 'todos' })
+@Entity('todos')
 export class Todo extends BaseEntity {
   @Column({ unique: true })
-  title: string;
+  title: string
 
   @Column()
-  description: string;
+  description: string
 
   @Column()
-  dueDate: Date;
+  dueDate: Date
 
-  @ManyToOne(() => User, (table) => table.todos, {
+  @ManyToOne(() => User, (user) => user.todos, {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
     nullable: false,
