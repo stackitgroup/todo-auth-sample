@@ -97,7 +97,7 @@ export class UserController {
       path: '/'
     })
     
-    res.status(200).send(user)
+    res.status(200).send({id: user., username: user.username})
   }
 
   @Post(routes.v1.user.auth)
@@ -146,40 +146,21 @@ export class UserController {
     res.status(200).send({ message: 'Refresh successful' })
   }
 
-  @Post(routes.v1.user.createTokens)
-  async createTokens(
+  @Post(routes.v1.user.logout)
+  async logout(
     @Headers('User-Agent') userAgentId: string,
-    @Body() body: { userId: string },
+    @Param('id') id: string,
     @Res() res: FastifyReply
   ) {
     if (!userAgentId) {
       throw new UnauthorizedException('User-Agent header is missing')
     }
-    if (!body?.userId) {
-      throw new BadRequestException('userId is missing')
-    }
 
-    const { accessToken, refreshToken } = await this.userService.createTokens(
-      userAgentId,
-      body.userId
-    )
+    res.clearCookie('refreshToken')
+    res.clearCookie('accessToken')
 
-    res.setCookie('accessToken', accessToken, {
-      expires: tenMinutesExpiration,
-      httpOnly: false,
-      secure: NODE_ENV === 'production',
-      sameSite: NODE_ENV === 'production' ? 'strict' : 'lax',
-      path: '/'
-    })
-    
-    res.setCookie('refreshToken', refreshToken, {
-      expires: fifteenDaysExpiration,
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: NODE_ENV === 'production' ? 'strict' : 'lax',
-      path: '/'
-    })
+    await this.userService.logOut(id, userAgentId)
 
-    res.status(200).send({ message: 'Account Created successful' })
+    res.status(200).send("Logged out successfully")
   }
 }

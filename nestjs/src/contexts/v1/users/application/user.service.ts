@@ -42,6 +42,20 @@ export class UserService {
     return []
   }
 
+  async logOut(userId: string, userAgent: string): Promise<User> {
+    const user = await this.userRepository.findById(userId)
+
+    if(!user) {
+      throw new NotFoundException(`User ID ${userId} not found`)
+    }
+
+    if(user.userAgent !== userAgent) {
+      throw new UnauthorizedException()
+    }
+
+    return await this.clearUserCredentials(userId)
+  }
+
   async signUp(
     data: AccessDTO & { userAgent: string }
   ): Promise<User & { accessToken: string; refreshToken: string }> {

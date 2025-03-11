@@ -1,28 +1,27 @@
-import { SocketsView } from '@/contexts/components/sockets/sockets'
 import { Route, Switch } from 'wouter'
-import { HelloWorldView } from '../contexts/components/hello-world/hello-world'
 import { ToasterProvider } from '../contexts/components/providers/toaster-provider'
 import { LoginView } from './pages/login/page'
+import { HomeView } from '@/contexts/components/home/home'
+import { Layout } from './pages/layout'
+import { CreateView } from '@/contexts/components/create/create'
 
 const App = () => {
   return (
     <>
       <ToasterProvider />
-      <Switch>
-        <Route path="/">
-          <HelloWorldView />
-        </Route>
-        {/* #region Zustand */}
-        <Route path="/login">
-          <LoginView />
-        </Route>
-        {/* #endregion Zustand */}
-        {/* #region Sockets */}
-        <Route path="/sockets">
-          <SocketsView />
-        </Route>
-        {/* #endregion Sockets */}
-      </Switch>
+      <Layout>
+        <Switch>
+          <Route path="/">
+            <HomeView />
+          </Route>
+          <Route path="/access">
+            <LoginView />
+          </Route>
+          <Route path="/create">
+            <CreateView />
+          </Route>
+        </Switch>
+      </Layout>
     </>
   )
 }

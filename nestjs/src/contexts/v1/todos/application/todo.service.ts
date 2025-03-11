@@ -98,10 +98,10 @@ export class TodoService {
     });
   }
 
-  async updateTodo(id: string, todo: Partial<Todo>): Promise<void> {
+  async updateTodo(id: string, todo: Partial<Todo>): Promise<Todo> {
     await this.existsId(id);
 
-    await this.todoRepository.update(id, todo);
+    return await this.todoRepository.update(id, todo);
   }
 
   async deleteTodo(id: string): Promise<void> {

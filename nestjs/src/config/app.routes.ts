@@ -16,7 +16,8 @@ export const routes = {
       login: 'login',
       register: 'signup',
       createTokens: 'create-tokens',
-      auth: 'auth'
+      auth: 'auth',
+      logout: 'logout/:id'
     },
   },
   v2: {

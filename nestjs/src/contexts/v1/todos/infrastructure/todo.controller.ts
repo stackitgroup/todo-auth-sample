@@ -39,8 +39,8 @@ export class TodoController {
   }
 
   @Put(routes.v1.todo.byId)
-  async updateTodo(@Param('id') id: string, @Body() data: Partial<Todo>): Promise<void> {
-    await this.todoService.updateTodo(id, data);
+  async updateTodo(@Param('id') id: string, @Body() data: Partial<Todo>): Promise<Todo> {
+    return await this.todoService.updateTodo(id, data);
   }
 
   @Delete(routes.v1.todo.byId)
