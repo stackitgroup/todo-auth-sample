@@ -8,6 +8,9 @@ import { HttpAuthRepository } from '../infrastructure/http-auth.repository'
 import {jwtDecode} from 'jwt-decode'
 import Cookie from 'js-cookie'
 import { JWTBody } from '../domain/jwt-body'
+import { navigate } from 'wouter/use-browser-location'
+import { tenMinutesExpiration } from '@/contexts/shared/domain/constants/jwt-constants'
+import { config } from '@/contexts/shared/domain/constants/config'
 
 export const isTokenExpired = (decodedToken: JWTBody & {exp: number, iat: number}) => {
   if (!decodedToken || !decodedToken.exp) return true;
@@ -24,25 +27,73 @@ export const AuthService = (repository: AuthRepository) => {
   }
 
   return {
-    refreshTokens: async (): Promise<void> => {
-      const user = useAuthStore((s) => s.user)
-
+    refreshTokens: async (user: User | null): Promise<void> => {
       if(!user) {
         toast.error("Something went wrong | REFRESH")
         useAuthStore.setState({ userAccessToken: "", isAuthenticated: false })
         return;
       }
 
-      await repository.refresh({userId: user.id})
-
-      const accessToken = Cookie.get('accessToken')
-
-      useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true })
+      try {
+        const response = await repository.refresh({userId: user.id})
+       
+        const accessToken = response.accessToken
+        
+        Cookie.set('accessToken', accessToken, {
+          expires: tenMinutesExpiration,
+          httpOnly: false,
+          secure: false,
+          sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+          path: '/'
+        })
+  
+        useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true })
+      } catch (error) {
+        toast.error(`${error}`)
+      }
     },
-    authenticate: (): void => {
-      const accessToken = Cookie.get('accessToken')
-      const user = useAuthStore((s: AuthState) => s.user)
+    verifyTokens: async (user: User | null, accessToken: string) => {
+      if(!user) {
+        return
+      }
 
+      const accessTokenCookie = Cookie.get('accessToken')
+      console.log(`veryifying ${accessToken}`)
+
+      if(!accessTokenCookie) {
+        useAuthStore.setState({ isAuthenticated: false, userAccessToken: '', user: null })
+        Cookie.remove('refreshToken')
+        return;
+      }
+
+      try {
+        const decoded : JWTBody & {exp: number, iat: number} = jwtDecode(accessToken)
+        let isAuthenticated = false
+        
+        if(decoded.userId === user.id && decoded.userAgentId === navigator.userAgent) {
+          isAuthenticated = true
+        }
+        
+        if (isTokenExpired(decoded)) {
+          const response = await repository.refresh({userId: user.id})
+          const accessToken = response.accessToken
+          Cookie.set('accessToken', accessToken, {
+            expires: 3650, // 10 years
+            httpOnly: false,
+            secure: false,
+            sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+            path: '/'
+          })
+          isAuthenticated = true
+
+          useAuthStore.setState({ user, userAccessToken: accessToken })
+        }
+        useAuthStore.setState({ isAuthenticated })
+      } catch (error) {
+        toast.error("Authentication failed.")
+      }
+    },
+    authenticate: (user : User | null, accessToken: string): void => {
       if(!user) {
         return
       }
@@ -78,27 +129,58 @@ export const AuthService = (repository: AuthRepository) => {
       await repository.logOut(user.id)
       Cookie.remove('accessToken')
       Cookie.remove('refreshToken')
-      window.location.href = "/access"
+      
+      navigate("/access")
     },
     logIn: async (dto: AccessDTO): Promise<void> => {
       try {
         const response = await repository.logIn(dto)
-  
-        const accessToken = Cookie.get('accessToken')
-  
-        useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true, user: response })
 
-        window.location.href = "/"
+        const {accessToken, ...rest} = response
+        
+        Cookie.set('accessToken', accessToken, {
+          expires: tenMinutesExpiration,
+          httpOnly: false,
+          secure: false,
+          sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+          path: '/'
+        })
+
+        if(!accessToken) {
+          throw new Error("Access Token Not Found")
+        }
+  
+        useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true, user: rest })
+
+        navigate("/")
       } catch (error) {
-        toast.error("Something went wrong")
+        toast.error(`${error}`)
       }
     },
     signUp: async (dto: AccessDTO): Promise<void> => {
-      const response = await repository.signUp(dto)
+      try {
+        const response = await repository.signUp(dto)
+  
+        const {accessToken, ...rest} = response
+        
+        Cookie.set('accessToken', accessToken, {
+          expires: tenMinutesExpiration,
+          httpOnly: false,
+          secure: false,
+          sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+          path: '/'
+        })
 
-      const accessToken = Cookie.get('accessToken')
-
-      useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true, user: response })
+        if(!accessToken) {
+          throw new Error("Access Token Not Found")
+        }
+  
+        useAuthStore.setState({ userAccessToken: accessToken, isAuthenticated: true, user: rest })
+        
+        navigate("/")
+      } catch (error) {
+        toast.error(`${error}`)
+      }
     }
   }
 }

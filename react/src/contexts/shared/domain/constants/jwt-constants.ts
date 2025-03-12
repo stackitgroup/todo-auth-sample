@@ -1,0 +1,1 @@
+export const tenMinutesExpiration = new Date(Date.now() + 10 * 60 * 1000)

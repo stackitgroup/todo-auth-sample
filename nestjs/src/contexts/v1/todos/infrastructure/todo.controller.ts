@@ -1,8 +1,9 @@
 import { routes } from '@/config/app.routes';
-import { Body, Controller, Delete, Get, Param, Post, Put, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Headers, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Todo } from '../domain/entities/todo.entity';
 import { TodoService } from '../application/todo.service';
 import { CreateTodoDTO } from './dto/create-todo.dto';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 @Controller({
   version: routes.v1.version,
@@ -22,7 +23,7 @@ export class TodoController {
   }
 
   @Get(routes.v1.todo.byUserId)
-  getTodoByUserId(
+  getTodosByUserId(
     @Headers('User-Agent') userAgent: string,
     @Headers('Authorization') authHeader: string,
     @Param('userId') userId: string
@@ -44,7 +45,24 @@ export class TodoController {
   }
 
   @Delete(routes.v1.todo.byId)
-  async deleteTodo(@Param('id') id: string): Promise<void> {
-    await this.todoService.deleteTodo(id);
+  async deleteTodo(
+    @Param('id') id: string,
+    @Headers('User-Agent') userAgent: string,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply
+  ): Promise<void> {
+    const { refreshToken } = req.cookies
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh Cookie token is missing')
+    }
+    
+    if (!userAgent) {
+      throw new UnauthorizedException('User-Agent header is missing')
+    }
+
+    await this.todoService.deleteTodo(id, userAgent, refreshToken);
+
+    res.status(200).send({id})
   }
 }

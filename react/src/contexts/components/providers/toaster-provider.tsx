@@ -2,10 +2,9 @@ import { Toaster } from 'sonner'
 
 export const ToasterProvider = () => (
   <Toaster
-    className="print:hidden"
-    closeButton={true}
+    closeButton={false}
     duration={10000}
-    position="top-right"
+    position="bottom-right"
     richColors={true}
     visibleToasts={3}
   />

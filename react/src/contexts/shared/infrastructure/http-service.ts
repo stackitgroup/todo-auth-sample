@@ -21,9 +21,12 @@ export abstract class HttpService {
     version?: `/${string}`
     options?: RequestInit
   }): Promise<Response> {
+    const accessToken = this.tokenService.getToken()
+    
     options.headers = new Headers({
       ...options.headers,
-      'User-Agent': navigator.userAgent
+      'User-Agent': navigator.userAgent,
+      'Authorization': `Bearer ${accessToken}`
     })
 
     if (

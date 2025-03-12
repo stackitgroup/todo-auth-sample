@@ -4,9 +4,12 @@ import { todoService } from "@/contexts/features/todos/application/todo.service"
 import { TodoDTO } from "@/contexts/features/todos/domain/todo.dto"
 import DatePicker from "react-datepicker";
 import { ChangeEvent, useState } from "react"
+import { navigate } from "wouter/use-browser-location";
 
 export const CreateForm = () => {
     const user = useAuthStore((s) => s.user)
+    const userAccessToken = useAuthStore((s) => s.userAccessToken)
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
     const [todo, setTodo] = useState<TodoDTO>({
         title: '',
         description: '',
@@ -25,12 +28,21 @@ export const CreateForm = () => {
         }
     };
 
+    const resetForm = () => {
+        setTodo({
+            userId: "",
+            description: "",
+            dueDate: new Date(),
+            title: ""
+        })
+    }
+
     const handleCreateTodo = (): void => {
-        // if (!user) return;
+        if (!user) return;
 
-        // setTodo({ ...todo, userId: user.id })
+        setTodo({ ...todo, userId: user.id })
 
-        todoService.createTodo(todo)
+        todoService.createTodo(todo, isAuthenticated, user, userAccessToken)
     }
 
     return (

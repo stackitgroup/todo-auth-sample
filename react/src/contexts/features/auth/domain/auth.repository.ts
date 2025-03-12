@@ -4,8 +4,8 @@ import { User } from "./user";
 
 export abstract class AuthRepository {
   getUserById: (id: string) => Promise<User>
-  refresh: (dto: RefreshRequestDto) => Promise<void>
-  signUp: (dto: AccessDTO) => Promise<User>
-  logIn: (dto: AccessDTO) => Promise<User>
+  refresh: (dto: RefreshRequestDto) => Promise<{status: number, message: string, accessToken: string}>
+  signUp: (dto: AccessDTO) => Promise<User & {accessToken: string}>
+  logIn: (dto: AccessDTO) => Promise<User & {accessToken: string}>
   logOut: (id: string) => Promise<void>
 }

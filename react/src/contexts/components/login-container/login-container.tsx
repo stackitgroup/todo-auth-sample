@@ -1,5 +1,4 @@
 import { authService } from "@/contexts/features/auth/application/auth.service";
-import { AuthState, useAuthStore } from "@/contexts/features/auth/infrastructure/auth.store";
 import { useState } from "react";
 
 export const LoginContainer = () => {

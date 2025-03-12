@@ -10,8 +10,8 @@ export class HttpAuthRepository extends HttpService implements AuthRepository {
     this.serviceUrl = '/v1/user'
   }
 
-  async refresh(dto: RefreshRequestDto): Promise<void> {
-    await this.request<void>({
+  async refresh(dto: RefreshRequestDto): Promise<{status: number, message: string, accessToken: string}> {
+    return await this.request<{status: number, message: string, accessToken: string}>({
       url: '/auth',
       options: {
         method: 'POST',
@@ -29,8 +29,8 @@ export class HttpAuthRepository extends HttpService implements AuthRepository {
     })
   }
 
-  async signUp(dto: AccessDTO): Promise<User> {
-    return await this.request<User>({
+  async signUp(dto: AccessDTO): Promise<User & {accessToken: string}> {
+    return await this.request<User & {accessToken: string}>({
       url: "/signup",
       options: {
         method: 'POST',
@@ -39,8 +39,8 @@ export class HttpAuthRepository extends HttpService implements AuthRepository {
     })
   }
 
-  async logIn(dto: AccessDTO): Promise<User> {
-    return await this.request<User>({
+  async logIn(dto: AccessDTO): Promise<User & {accessToken: string}> {
+    return await this.request<User & {accessToken: string}>({
       url: "/login",
       options: {
         method: 'POST',

@@ -37,8 +37,9 @@ export class TodoService {
   async getTodosByUserId(userId: string, userAgent: string, authHeader: string): Promise<Todo[] | null> {
     const user = await this.userService.getUserById(userId)
 
-    if(!user) {
-      throw new NotFoundException(`User ID ${userId} not found`)
+    if(user.userAgent !== userAgent) {
+      await this.userService.clearUserCredentials(user.id)
+      throw new UnauthorizedException()
     }
 
     const accessToken = authHeader.split(' ')[1]
@@ -81,10 +82,6 @@ export class TodoService {
 
     const user = await this.userService.getUserById(data.userId)
 
-    if(!user) {
-      throw new NotFoundException(`User ID ${data.userId} does not exist`)
-    }
-
     if(user.userAgent !== userAgent) {
       await this.userService.clearUserCredentials(data.userId)
       throw new UnauthorizedException()
@@ -104,19 +101,28 @@ export class TodoService {
     return await this.todoRepository.update(id, todo);
   }
 
-  async deleteTodo(id: string): Promise<void> {
-    await this.existsId(id)
+  async deleteTodo(id: string, userAgent: string, refreshToken: string): Promise<void> {
+    const todo = await this.existsId(id)
+
+    const authorId = todo.user.id
+
+    const user = await this.userService.getUserById(authorId)
+
+    if(user.userAgent !== userAgent || user.refreshToken !== refreshToken) {
+      await this.userService.clearUserCredentials(user.id)
+      throw new UnauthorizedException()
+    }
 
     await this.todoRepository.delete(id);
   }
 
-  private async existsId(id: string) : Promise<void> {
+  private async existsId(id: string) : Promise<Todo> {
     const found = await this.todoRepository.findById(id);
 
     if(!found) {
       throw new NotFoundException(`TODO with ID ${id} not found`)
     }
     
-    return;
+    return found;
   }
 }

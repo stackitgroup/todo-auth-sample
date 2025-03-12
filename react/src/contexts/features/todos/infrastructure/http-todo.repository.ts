@@ -2,6 +2,7 @@ import { HttpService } from '@/contexts/shared/infrastructure/http-service'
 import { TodoRepository } from '../domain/todo.repository'
 import { Todo } from '../domain/todo'
 import { TodoDTO } from '../domain/todo.dto'
+import Cookies from 'js-cookie'
 
 export class HttpTodoRepository extends HttpService implements TodoRepository {
   constructor() {
@@ -62,5 +63,6 @@ export class HttpTodoRepository extends HttpService implements TodoRepository {
                 method: 'DELETE'
             }
         })
+        return
     }
 }

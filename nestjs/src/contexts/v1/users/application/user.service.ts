@@ -59,7 +59,6 @@ export class UserService {
   async signUp(
     data: AccessDTO & { userAgent: string }
   ): Promise<User & { accessToken: string; refreshToken: string }> {
-    console.log(data)
     const alreadyExists = (
       await this.userRepository.findByCondition({
         condition: { username: data.username }
@@ -144,7 +143,7 @@ export class UserService {
         userId
       )
 
-      if (haveSameUserAgent || haveSameRefreshToken) {
+      if(haveSameRefreshToken === false || haveSameUserAgent === false) {
         throw new UnauthorizedException(
           `Wrong credentials. Provided: ${JSON.stringify({ userAgentId, refreshToken })}`
         )
