@@ -40,8 +40,28 @@ export class TodoController {
   }
 
   @Put(routes.v1.todo.byId)
-  async updateTodo(@Param('id') id: string, @Body() data: Partial<Todo>): Promise<Todo> {
-    return await this.todoService.updateTodo(id, data);
+  async updateTodo(
+    @Param('id') id: string, 
+    @Body() data: Partial<Todo>,
+    @Headers('User-Agent') userAgent: string,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply
+  ): Promise<Todo> {
+    const { refreshToken } = req.cookies
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh Cookie token is missing')
+    }
+    
+    if (!userAgent) {
+      throw new UnauthorizedException('User-Agent header is missing')
+    }
+
+    const response = await this.todoService.updateTodo(id, data, userAgent, refreshToken);
+    
+    res.status(200).send(response)
+    
+    return response
   }
 
   @Delete(routes.v1.todo.byId)

@@ -58,7 +58,6 @@ export const AuthService = (repository: AuthRepository) => {
       }
 
       const accessTokenCookie = Cookie.get('accessToken')
-      console.log(`veryifying ${accessToken}`)
 
       if(!accessTokenCookie) {
         useAuthStore.setState({ isAuthenticated: false, userAccessToken: '', user: null })

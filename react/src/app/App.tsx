@@ -4,6 +4,7 @@ import { LoginView } from './pages/login/page'
 import { HomeView } from '@/contexts/components/home/home'
 import { Layout } from './pages/layout'
 import { CreateView } from '@/contexts/components/create/create'
+import { UpdateView } from '@/contexts/components/update/update'
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/access">
             <LoginView />
           </Route>
+          <Route path="/update/:id">{(params) => <UpdateView id={params.id} />}</Route>
           <Route path="/create">
             <CreateView />
           </Route>

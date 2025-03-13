@@ -7,6 +7,7 @@ import { useAuthStore } from '../../auth/infrastructure/auth.store'
 import { authService } from '../../auth/application/auth.service'
 import { User } from '../../auth/domain/user'
 import { navigate } from 'wouter/use-browser-location'
+import { Todo } from '../domain/todo'
 
 export const TodoService = (repository: TodoRepository) => {
   if (repository === undefined) {
@@ -55,29 +56,29 @@ export const TodoService = (repository: TodoRepository) => {
       }
 
     },
-    updateTodo: async (id: string, dto: Partial<TodoDTO>, isAuthenticated: boolean, user: User | null,  accessToken:  string): Promise<void> => {
+    updateTodo: async (id: string, dto: Partial<TodoDTO>, user: User | null,  accessToken:  string, todos: Todo[]): Promise<void> => {
         await authService.verifyTokens(user, accessToken)
-        const todos = useTodoStore((s) => s.todos)
+
         const todo = todos.find((t) => t.id === id)
         
         if(!todo) {
-            return;
+          return;
         } 
         
-        const idx = todos.indexOf(todo)
         const todoUpdated = await repository.updateTodo(id, dto)
+        
+        const idx = todos.indexOf(todo)
         todos[idx] = todoUpdated
         
         useTodoStore.setState({todos})
     },
-    deleteTodo: async (id: string, user: User | null, accessToken: string): Promise<void> => {
+    deleteTodo: async (id: string, user: User | null, accessToken: string, todos: Todo[]): Promise<void> => {
         await authService.verifyTokens(user, accessToken)
+        
         await repository.deleteTodo(id)
         
-        const todos = useTodoStore((s) => s.todos)
         const newTodos = todos.filter((t) => t.id !== id)
-    
-        useTodoStore.setState({ todos: [] })
+        useTodoStore.setState({ todos: newTodos })
     }
   }
 }

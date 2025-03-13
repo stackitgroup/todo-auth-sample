@@ -58,6 +58,9 @@ export class TodoService {
           user: {
             id: userId
           }
+        },
+        order: {
+          createdAt: 'desc'
         }
       }
     ))
@@ -95,14 +98,38 @@ export class TodoService {
     });
   }
 
-  async updateTodo(id: string, todo: Partial<Todo>): Promise<Todo> {
-    await this.existsId(id);
+  async updateTodo(id: string, dto: Partial<Todo>, userAgent: string, refreshToken: string): Promise<Todo> {
+    const todoInDB = await this.existsId(id)
 
-    return await this.todoRepository.update(id, todo);
+    console.log({todoInDB})
+
+    const authorId = todoInDB.user.id
+
+    const user = await this.userService.getUserById(authorId)
+
+    if(user.userAgent !== userAgent || user.refreshToken !== refreshToken) {
+      await this.userService.clearUserCredentials(user.id)
+      throw new UnauthorizedException()
+    }
+
+    await this.todoRepository
+      .createQueryBuilder('todo')
+      .update(Todo)
+      .set({
+        title: dto.title,
+        description: dto.description,
+        dueDate: dto.dueDate
+      })
+      .where("id = :id", { id })
+      .execute();
+
+    return Object.assign(todoInDB, dto)
   }
 
   async deleteTodo(id: string, userAgent: string, refreshToken: string): Promise<void> {
     const todo = await this.existsId(id)
+
+    console.log({todo})
 
     const authorId = todo.user.id
 
@@ -117,7 +144,16 @@ export class TodoService {
   }
 
   private async existsId(id: string) : Promise<Todo> {
-    const found = await this.todoRepository.findById(id);
+    const todo = await this.todoRepository
+      .createQueryBuilder('todo')
+      .leftJoinAndSelect('todo.user', 'user')
+      .where('todo.id = :id', { id })
+      .getOne();
+    
+    // console.log({a, b})
+
+    const found = todo
+    // const found = await this.todoRepository.findById(id);
 
     if(!found) {
       throw new NotFoundException(`TODO with ID ${id} not found`)
