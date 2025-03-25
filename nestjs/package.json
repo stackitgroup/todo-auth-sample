@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@fastify/cookie": "^11.0.2",
+		"@fastify/cors": "^11.0.0",
 		"@keyv/sqlite": "4.0.1",
 		"@nestjs/axios": "4.0.0",
 		"@nestjs/cli": "11.0.2",

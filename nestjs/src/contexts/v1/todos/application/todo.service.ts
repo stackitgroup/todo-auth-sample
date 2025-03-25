@@ -129,8 +129,6 @@ export class TodoService {
   async deleteTodo(id: string, userAgent: string, refreshToken: string): Promise<void> {
     const todo = await this.existsId(id)
 
-    console.log({todo})
-
     const authorId = todo.user.id
 
     const user = await this.userService.getUserById(authorId)
@@ -149,16 +147,11 @@ export class TodoService {
       .leftJoinAndSelect('todo.user', 'user')
       .where('todo.id = :id', { id })
       .getOne();
-    
-    // console.log({a, b})
 
-    const found = todo
-    // const found = await this.todoRepository.findById(id);
-
-    if(!found) {
+    if(!todo) {
       throw new NotFoundException(`TODO with ID ${id} not found`)
     }
     
-    return found;
+    return todo;
   }
 }
